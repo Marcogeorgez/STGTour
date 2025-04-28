@@ -25,10 +25,9 @@ export function SetTourStepPopperByElement(forElement: HTMLElement, gtourWrapper
   if (forElement !== null) {
     showHideArrow(gtourWrapper, false);
     // @ts-ignore 
-    popperInstance = Popper.createPopper(forElement, gtourWrapper, {
-      placement: placement,
-      strategy: strategy
-    });
+    setTimeout(() => {
+            popperInstance = Popper.createPopper(forElement, gtourWrapper, { placement: placement, strategy: strategy });
+        }, 10);
   }
 } 
 
