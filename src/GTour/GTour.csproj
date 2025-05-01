@@ -24,6 +24,7 @@
       <RepositoryType>Github</RepositoryType>
       <PackageReadmeFile>readme.md</PackageReadmeFile>
       <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+      <StaticWebAssetBasePath>STGTour.GTour</StaticWebAssetBasePath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -39,7 +40,14 @@
       <PrivateAssets>all</PrivateAssets>
      </PackageReference>
   </ItemGroup>
-  
+  <ItemGroup>
+    <Content Include="wwwroot\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+    </Content>
+  </ItemGroup>
+
+
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
