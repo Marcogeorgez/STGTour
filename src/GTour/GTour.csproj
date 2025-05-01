@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-      <StaticWebAssetBasePath>STGTour.GTour</StaticWebAssetBasePath>
+    <PackageId>STGTour.GTour</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,12 +14,10 @@
     <PackageReference Include="NuGet.Build.Tasks.Pack" Version="6.13.2">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-     <PackageReference Include="BuildBundlerMinifier" Version="3.2.449">
+    <PackageReference Include="BuildBundlerMinifier" Version="3.2.449">
       <PrivateAssets>all</PrivateAssets>
-     </PackageReference>
+    </PackageReference>
   </ItemGroup>
-
-
 
   <ItemGroup>
     <SupportedPlatform Include="browser" />
@@ -39,6 +37,13 @@
   <ItemGroup>
     <None Include="compilerconfig.json" />
   </ItemGroup>
+
+  <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
+    <ItemGroup>
+      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+    </ItemGroup>
+  </Target>
+
 
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="PreBuildEvent">
