@@ -2,16 +2,13 @@
 using GTour.Abstractions.Common;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace GTour.Components
+namespace GTour.Components;
+
+public partial class GuidedTour : GTourComponent
 {
-  public partial class GuidedTour : GTourComponent
-  {
 
     #region Properties
     [Parameter(CaptureUnmatchedValues = true)]
@@ -63,68 +60,67 @@ namespace GTour.Components
     #region Methods
     internal void StepUnRegistered(GuidedTourStep guidedTourStep)
     {
-      if (Steps != null)
-      {
-        base.RemoveGTourStep(guidedTourStep);
-      }
+        if (Steps != null)
+        {
+            base.RemoveGTourStep(guidedTourStep);
+        }
     }
 
     internal void StepRegistered(GuidedTourStep guidedTourStep)
     {
-      if (Steps != null)
-      {
-        base.AddGTourStep(guidedTourStep);
-      }
+        if (Steps != null)
+        {
+            base.AddGTourStep(guidedTourStep);
+        }
     }
 
     internal async Task JsInteropStart(GuidedTourStep guidedTourStep)
     {
-      if (guidedTourStep == null)
-      {
-        Logger?.LogWarning($"{nameof(JsInteropStart)}: Guided tour step is null");
-        return;
-      }
-      
-      if (!string.IsNullOrEmpty(guidedTourStep.ElementSelector))
-      {
-        await JsInteropCommon.ScrollToElement(guidedTourStep.ElementSelector);
-
-        await JsInteropPopper.SetTourStepPopperBySelector(guidedTourStep.ElementSelector, this.WrapperElement, guidedTourStep.PopupPlacement.GetEnumDisplay(), guidedTourStep.PopupStrategy.GetEnumDisplay());
-
-        if (this.HighlightEnabled && !string.IsNullOrEmpty(this.HighlightClass))
+        if (guidedTourStep == null)
         {
-          await JsInteropCommon.AddClassToElement(guidedTourStep.ElementSelector, this.HighlightClass);
+            Logger?.LogWarning($"{nameof(JsInteropStart)}: Guided tour step is null");
+            return;
         }
 
-      }
-      else
-      {
-        await JsInteropPopper.ResetTourStepPopper(this.WrapperElement, guidedTourStep.PopupPlacement.GetEnumDisplay(), guidedTourStep.PopupStrategy.GetEnumDisplay());
-      }
+        if (!string.IsNullOrEmpty(guidedTourStep.ElementSelector))
+        {
+            await JsInteropCommon.ScrollToElement(guidedTourStep.ElementSelector);
+
+            await JsInteropPopper.SetTourStepPopperBySelector(guidedTourStep.ElementSelector, this.WrapperElement, guidedTourStep.PopupPlacement.GetEnumDisplay(), guidedTourStep.PopupStrategy.GetEnumDisplay());
+
+            if (this.HighlightEnabled && !string.IsNullOrEmpty(this.HighlightClass))
+            {
+                await JsInteropCommon.AddClassToElement(guidedTourStep.ElementSelector, this.HighlightClass);
+            }
+
+        }
+        else
+        {
+            await JsInteropPopper.ResetTourStepPopper(this.WrapperElement, guidedTourStep.PopupPlacement.GetEnumDisplay(), guidedTourStep.PopupStrategy.GetEnumDisplay());
+        }
     }
 
     internal async Task JsInteropEnd(GuidedTourStep guidedTourStep)
     {
-      if (guidedTourStep == null)
-      {
-        Logger?.LogWarning($"{nameof(JsInteropEnd)}: Guided tour step is null");
-        return;
-      }
+        if (guidedTourStep == null)
+        {
+            Logger?.LogWarning($"{nameof(JsInteropEnd)}: Guided tour step is null");
+            return;
+        }
 
-      if (this.HighlightEnabled && !string.IsNullOrEmpty(this.HighlightClass))
-      {
-        await JsInteropCommon.RemoveClassFromElement(guidedTourStep.ElementSelector, this.HighlightClass);
-      }
+        if (this.HighlightEnabled && !string.IsNullOrEmpty(this.HighlightClass))
+        {
+            await JsInteropCommon.RemoveClassFromElement(guidedTourStep.ElementSelector, this.HighlightClass);
+        }
     }
 
     protected override async Task CleanupTour()
     {
-      if (this.CurrentStep != null)
-      {
-        await JsInteropEnd(this.CurrentStep as GuidedTourStep);
-      }
+        if (this.CurrentStep != null)
+        {
+            await JsInteropEnd(this.CurrentStep as GuidedTourStep);
+        }
     }
     #endregion
 
-  }
 }

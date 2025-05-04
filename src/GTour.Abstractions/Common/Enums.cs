@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace GTour.Abstractions.Common
+namespace GTour.Abstractions.Common;
+
+public enum PopperPlacement
 {
-  public enum PopperPlacement
-  {
     [Display(Name = "none")]
     None,
     [Display(Name = "auto")]
@@ -42,27 +39,25 @@ namespace GTour.Abstractions.Common
     LeftStart,
     [Display(Name = "left-end")]
     LeftEnd
-  }
+}
 
-  public enum PopperStrategy
-  {
+public enum PopperStrategy
+{
     [Display(Name = "fixed")]
     Fixed,
     [Display(Name = "absolute")]
     Absolute
-  }
+}
 
-  public static class EnumExtensions
-  {
+public static class EnumExtensions
+{
     public static string GetEnumDisplay(this Enum enumValue)
     {
 
-      return enumValue.GetType()
-                      .GetMember(enumValue.ToString())
-                      .FirstOrDefault()?
-                      .GetCustomAttribute<DisplayAttribute>()?
-                      .Name ?? enumValue.ToString();
+        return enumValue.GetType()
+                        .GetMember(enumValue.ToString())
+                        .FirstOrDefault()?
+                        .GetCustomAttribute<DisplayAttribute>()?
+                        .Name ?? enumValue.ToString();
     }
-  }
-
 }

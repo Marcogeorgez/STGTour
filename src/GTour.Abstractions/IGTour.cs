@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace GTour.Abstractions;
 
-namespace GTour.Abstractions
+public interface IGTour
 {
-  public interface IGTour
-  {
 
     #region Properties
     string TourId { get; set; }
@@ -21,5 +15,4 @@ namespace GTour.Abstractions
     string CurrentStepName { get; }
     #endregion
 
-  }
 }

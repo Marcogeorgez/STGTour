@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace GTour.Abstractions;
 
-namespace GTour.Abstractions
+public interface ITheme
 {
-  public interface ITheme
-  {
 
     public string GTourOverlay { get; set; }
 
@@ -33,5 +27,4 @@ namespace GTour.Abstractions
 
     public string GTourStepCompleteButton { get; set; }
 
-  }
 }

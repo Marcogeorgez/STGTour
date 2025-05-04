@@ -4,13 +4,12 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace GTour
+namespace GTour;
+
+public abstract class GTourComponent : ComponentBase, IGTour, IDisposable
 {
-  public abstract class GTourComponent : ComponentBase, IGTour, IDisposable
-  {
 
     #region Properties
     [Parameter]
@@ -45,17 +44,17 @@ namespace GTour
 
     public bool IsOnFirstStep { get; private set; } = false;
 
-    public bool IsActive 
+    public bool IsActive
     {
-      get => _isActive;
-      private set
-      {
-        if (_isActive != value)
+        get => _isActive;
+        private set
         {
-          _isActive = value;
-          this.StateHasChanged();
+            if (_isActive != value)
+            {
+                _isActive = value;
+                this.StateHasChanged();
+            }
         }
-      } 
     }
     #endregion
 
@@ -76,96 +75,96 @@ namespace GTour
     #region Methods
     internal async Task CancelTour()
     {
-      await CleanupTour();
+        await CleanupTour();
 
-      this.IsActive = false;
+        this.IsActive = false;
 
-      this.CurrentStep = null;
-      this.CurrentStepName = null;
-      this.CurrentStepIndex = null;
+        this.CurrentStep = null;
+        this.CurrentStepName = null;
+        this.CurrentStepIndex = null;
 
-      await this.OnTourCanceled.InvokeAsync(this);
+        await this.OnTourCanceled.InvokeAsync(this);
     }
 
     internal async Task CompleteTour()
     {
-      await CleanupTour();
+        await CleanupTour();
 
-      this.IsActive = false;
+        this.IsActive = false;
 
-      this.CurrentStep = null;
-      this.CurrentStepName = null;
-      this.CurrentStepIndex = null;
+        this.CurrentStep = null;
+        this.CurrentStepName = null;
+        this.CurrentStepIndex = null;
 
-      await this.OnTourCompleted.InvokeAsync(this);
+        await this.OnTourCompleted.InvokeAsync(this);
     }
 
     internal async Task GoToStep(string stepName)
     {
-      int? stepIndex = GetStepWithNameIndex(stepName);
-      if (stepIndex.HasValue)
-      {
-        await SetTourStep(stepIndex.Value);
-      }
+        int? stepIndex = GetStepWithNameIndex(stepName);
+        if (stepIndex.HasValue)
+        {
+            await SetTourStep(stepIndex.Value);
+        }
     }
 
     internal async Task NextStep()
     {
-      int? nextStepIndex = GetNextStepIndex();
-      if (nextStepIndex.HasValue)
-      {
-        await SetTourStep(nextStepIndex.Value);
-      }
+        int? nextStepIndex = GetNextStepIndex();
+        if (nextStepIndex.HasValue)
+        {
+            await SetTourStep(nextStepIndex.Value);
+        }
     }
 
     internal async Task PreviousStep()
     {
-      int? previousStepIndex = GetPreviousStepIndex();
-      if (previousStepIndex.HasValue)
-      {
-        await SetTourStep(previousStepIndex.Value);
-      }
+        int? previousStepIndex = GetPreviousStepIndex();
+        if (previousStepIndex.HasValue)
+        {
+            await SetTourStep(previousStepIndex.Value);
+        }
     }
 
     internal async Task StartTour()
     {
-      this.IsActive = true;
-      
-      this.CurrentStep = null;
-      this.CurrentStepName = null;
-      this.CurrentStepIndex = null;
+        this.IsActive = true;
 
-      this.Steps.ToList().ForEach(async (step) => await step.Initialise());
+        this.CurrentStep = null;
+        this.CurrentStepName = null;
+        this.CurrentStepIndex = null;
 
-      await this.OnTourStarted.InvokeAsync(this);
+        this.Steps.ToList().ForEach(async (step) => await step.Initialise());
 
-      await this.NextStep();
+        await this.OnTourStarted.InvokeAsync(this);
 
-      StateHasChanged();
+        await this.NextStep();
+
+        StateHasChanged();
     }
     #endregion
 
     #region Register/Unregister
     protected override void OnInitialized()
     {
-      this.TourService.RegisterTour(this);
-      base.OnInitialized();
+        this.TourService.RegisterTour(this);
+        base.OnInitialized();
     }
 
     public void Dispose()
     {
-      Dispose(true);
+        Dispose(true);
     }
 
     protected virtual void Dispose(bool disposing)
     {
-      if (_isDisposed == false && disposing)
-      {
-        CleanupTour();
+        if (_isDisposed == false && disposing)
+        {
+            CleanupTour();
 
-        TourService?.DeRegisterTour(this);
-        _isDisposed = true;
-      }
+            TourService?.DeRegisterTour(this);
+            _isDisposed = true;
+        }
     }
     #endregion
 
@@ -179,21 +178,21 @@ namespace GTour
     /// <returns></returns>
     protected virtual async Task SetTourStep(int index)
     {
-      var steps = (this.HasUnOrderedSteps ? this.Steps : this.OrderedSteps).ToList();
+        var steps = ( this.HasUnOrderedSteps ? this.Steps : this.OrderedSteps ).ToList();
 
-      if (this.CurrentStep != null)
-      {
-        await this.CurrentStep.DeActivate();
-      }
+        if (this.CurrentStep != null)
+        {
+            await this.CurrentStep.DeActivate();
+        }
 
-      this.CurrentStep = steps[index];
-      this.CurrentStepIndex = index;
-      this.CurrentStepName = this.CurrentStep.StepName;
+        this.CurrentStep = steps[index];
+        this.CurrentStepIndex = index;
+        this.CurrentStepName = this.CurrentStep.StepName;
 
-      this.IsOnFirstStep = (this.GetPreviousStepIndex() == null);
-      this.IsOnLastStep = (this.GetNextStepIndex() == null);
+        this.IsOnFirstStep = ( this.GetPreviousStepIndex() == null );
+        this.IsOnLastStep = ( this.GetNextStepIndex() == null );
 
-      await this.CurrentStep.Activate(this.IsOnFirstStep, this.IsOnLastStep);
+        await this.CurrentStep.Activate(this.IsOnFirstStep, this.IsOnLastStep);
     }
 
     /// <summary>
@@ -202,34 +201,34 @@ namespace GTour
     /// <returns></returns>
     protected virtual int? GetPreviousStepIndex()
     {
-      int? previousIndex = null;
-      var steps = (this.HasUnOrderedSteps ? this.Steps : this.OrderedSteps).ToList();
+        int? previousIndex = null;
+        var steps = ( this.HasUnOrderedSteps ? this.Steps : this.OrderedSteps ).ToList();
 
-      Logger?.LogInformation($"{nameof(GetPreviousStepIndex)}: Calculating previous step index.");
+        Logger?.LogInformation($"{nameof(GetPreviousStepIndex)}: Calculating previous step index.");
 
-      if (steps != null && steps.Count() > 0)
-      {
-        if ((CurrentStepIndex ?? 0) == 0)
+        if (steps != null && steps.Count() > 0)
         {
-          Logger?.LogInformation($"{nameof(GetPreviousStepIndex)}: No previous step, Tour is already at the start");
+            if (( CurrentStepIndex ?? 0 ) == 0)
+            {
+                Logger?.LogInformation($"{nameof(GetPreviousStepIndex)}: No previous step, Tour is already at the start");
+            }
+            else
+            {
+
+                for (int i = CurrentStepIndex.Value - 1; i >= 0; i--)
+                {
+                    if (steps[i].SkipStep == false)
+                    {
+                        previousIndex = i;
+                        break;
+                    }
+                }
+            }
         }
         else
-        {
+            Logger?.LogInformation($"{nameof(GetPreviousStepIndex)}: No steps defined for the tour");
 
-          for (int i = CurrentStepIndex.Value - 1; i >= 0; i--)
-          {
-            if (steps[i].SkipStep == false)
-            {
-              previousIndex = i;
-              break;
-            }
-          }
-        }
-      }
-      else
-        Logger?.LogInformation($"{nameof(GetPreviousStepIndex)}: No steps defined for the tour");
-
-      return previousIndex;
+        return previousIndex;
     }
 
     /// <summary>
@@ -238,31 +237,31 @@ namespace GTour
     /// <returns></returns>
     protected virtual int? GetNextStepIndex()
     {
-      int? nextIndex = null;
-      var steps = (this.HasUnOrderedSteps ? this.Steps : this.OrderedSteps).ToList();
-      Logger?.LogInformation($"{nameof(GetNextStepIndex)}: Calculating next step index.");
+        int? nextIndex = null;
+        var steps = ( this.HasUnOrderedSteps ? this.Steps : this.OrderedSteps ).ToList();
+        Logger?.LogInformation($"{nameof(GetNextStepIndex)}: Calculating next step index.");
 
-      if (steps != null && steps.Count() > 0)
-      {
-        int fromStep = (CurrentStepIndex.HasValue ? CurrentStepIndex.Value + 1 : 0);
-
-        for (int i = fromStep; i < steps.Count(); i++)
+        if (steps != null && steps.Count() > 0)
         {
-          if (steps[i].SkipStep == false)
-          {
-            nextIndex = i;
-            break;
-          }
-        }
-        if (nextIndex.HasValue == false)
-        {
-          Logger?.LogInformation($"{nameof(GetNextStepIndex)}: No next step, Tour is already at the end");
-        }
-      }
-      else
-        Logger?.LogInformation($"{nameof(GetNextStepIndex)}: No steps defined for the tour");
+            int fromStep = ( CurrentStepIndex.HasValue ? CurrentStepIndex.Value + 1 : 0 );
 
-      return nextIndex;
+            for (int i = fromStep; i < steps.Count(); i++)
+            {
+                if (steps[i].SkipStep == false)
+                {
+                    nextIndex = i;
+                    break;
+                }
+            }
+            if (nextIndex.HasValue == false)
+            {
+                Logger?.LogInformation($"{nameof(GetNextStepIndex)}: No next step, Tour is already at the end");
+            }
+        }
+        else
+            Logger?.LogInformation($"{nameof(GetNextStepIndex)}: No steps defined for the tour");
+
+        return nextIndex;
     }
 
     /// <summary>
@@ -273,24 +272,24 @@ namespace GTour
     protected virtual int? GetStepWithNameIndex(string stepName)
     {
 
-      if (string.IsNullOrEmpty(stepName))
-        throw new ArgumentNullException(nameof(stepName));
+        if (string.IsNullOrEmpty(stepName))
+            throw new ArgumentNullException(nameof(stepName));
 
-      int? result = null;
-      int localIndex = 0;
-      var steps = (this.HasUnOrderedSteps ? this.Steps : this.OrderedSteps).ToList();
-      // Search the visible steps for the step name index
-      foreach (var step in steps)
-      {
-        if (step.StepName.ToLower() == stepName.ToLower())
+        int? result = null;
+        int localIndex = 0;
+        var steps = ( this.HasUnOrderedSteps ? this.Steps : this.OrderedSteps ).ToList();
+        // Search the visible steps for the step name index
+        foreach (var step in steps)
         {
-          result = localIndex;
-          break;
+            if (step.StepName.ToLower() == stepName.ToLower())
+            {
+                result = localIndex;
+                break;
+            }
+            localIndex++;
         }
-        localIndex++;
-      }
 
-      return result;
+        return result;
     }
 
     /// <summary>
@@ -299,12 +298,12 @@ namespace GTour
     /// <param name="step"></param>
     protected void AddGTourStep(IGTourStep step)
     {
-      var steps = this.Steps.ToList();
-      steps.Add(step);
+        var steps = this.Steps.ToList();
+        steps.Add(step);
 
-      this.OnTourStepRegistered.InvokeAsync(step);
+        this.OnTourStepRegistered.InvokeAsync(step);
 
-      this.Steps = steps;
+        this.Steps = steps;
     }
 
     /// <summary>
@@ -313,17 +312,16 @@ namespace GTour
     /// <param name="step"></param>
     protected void RemoveGTourStep(IGTourStep step)
     {
-      var steps = this.Steps.ToList();
-      steps.Remove(step);
+        var steps = this.Steps.ToList();
+        steps.Remove(step);
 
-      this.OnTourStepDeRegistered.InvokeAsync(step);
+        this.OnTourStepDeRegistered.InvokeAsync(step);
 
-      this.Steps = steps;
+        this.Steps = steps;
     }
 
     protected abstract Task CleanupTour();
-    
+
     #endregion
 
-  }
 }

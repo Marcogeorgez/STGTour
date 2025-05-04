@@ -2,15 +2,12 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace GTour
+namespace GTour;
+
+public abstract class GTourStepComponent : ComponentBase, IGTourStep, IDisposable
 {
-  public abstract class GTourStepComponent : ComponentBase, IGTourStep, IDisposable
-  {
 
     #region Properties
 
@@ -68,83 +65,83 @@ namespace GTour
     #region Methods
     public async Task CancelTour()
     {
-      await this.OnTourCanceled.InvokeAsync(this);
-      await this.GTourService?.CancelTour();
+        await this.OnTourCanceled.InvokeAsync(this);
+        await this.GTourService?.CancelTour();
     }
 
     public async Task PreviousStep()
     {
-      await this.OnNavigatePrevious.InvokeAsync(this);
-      await this.GTourService?.PreviousStep();
+        await this.OnNavigatePrevious.InvokeAsync(this);
+        await this.GTourService?.PreviousStep();
     }
 
     public async Task NextStep()
     {
-      await this.OnNavigateNext.InvokeAsync(this);
-      await this.GTourService?.NextStep();
+        await this.OnNavigateNext.InvokeAsync(this);
+        await this.GTourService?.NextStep();
     }
 
     public async Task GoToStep(string stepName)
     {
-      await this.GTourService?.GoToStep(stepName);
+        await this.GTourService?.GoToStep(stepName);
     }
 
     public async Task CompleteTour()
     {
-      await this.OnTourCompleted.InvokeAsync(this);
-      await this.GTourService?.CompleteTour();
+        await this.OnTourCompleted.InvokeAsync(this);
+        await this.GTourService?.CompleteTour();
     }
 
     public Task Initialise()
     {
-      this.IsActiveStep = false;
-      this.IsFirstStep = false;
-      this.IsLastStep = false;
+        this.IsActiveStep = false;
+        this.IsFirstStep = false;
+        this.IsLastStep = false;
 
-      StateHasChanged();
+        StateHasChanged();
 
-      return Task.CompletedTask;
+        return Task.CompletedTask;
     }
 
     protected virtual Task RunActivation()
     {
-      return Task.CompletedTask;
+        return Task.CompletedTask;
     }
 
     protected virtual Task RunDeActivation()
     {
-      return Task.CompletedTask;
+        return Task.CompletedTask;
     }
 
     public async Task DeActivate()
     {
-      this.IsActiveStep = false;
+        this.IsActiveStep = false;
 
-      await this.RunDeActivation();
+        await this.RunDeActivation();
 
-      await this.OnStepDeActivated.InvokeAsync(this);
+        await this.OnStepDeActivated.InvokeAsync(this);
 
-      StateHasChanged();
+        StateHasChanged();
     }
 
     public async Task Activate(bool isFirstStep, bool isLastStep)
     {
-      this.IsActiveStep = true;
-      this.IsFirstStep = isFirstStep;
-      this.IsLastStep = isLastStep;
+        this.IsActiveStep = true;
+        this.IsFirstStep = isFirstStep;
+        this.IsLastStep = isLastStep;
 
-      await this.RunActivation();
+        await this.RunActivation();
 
-      await this.OnStepActivated.InvokeAsync(this);
+        await this.OnStepActivated.InvokeAsync(this);
 
-      StateHasChanged();
+        StateHasChanged();
     }
     #endregion
 
     #region Dispose
     public void Dispose()
     {
-      Dispose(true);
+        Dispose(true);
     }
 
     protected virtual void Dispose(bool disposing)
@@ -152,5 +149,4 @@ namespace GTour
     }
     #endregion
 
-  }
 }

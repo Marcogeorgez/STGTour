@@ -1,14 +1,9 @@
 ﻿using GTour.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace GTour.Themes
+namespace GTour.Themes;
+
+public class Bootstrap : ITheme
 {
-  public class Bootstrap : ITheme
-  {
     public string GTourOverlay { get; set; }
     public string GTourWrapper { get; set; }
     public string GTourArrow { get; set; }
@@ -21,5 +16,4 @@ namespace GTour.Themes
     public string GTourStepPreviousButton { get; set; } = "btn btn-secondary ";
     public string GTourStepNextButton { get; set; } = "btn btn-primary ";
     public string GTourStepCompleteButton { get; set; } = "btn btn-success ";
-  }
 }

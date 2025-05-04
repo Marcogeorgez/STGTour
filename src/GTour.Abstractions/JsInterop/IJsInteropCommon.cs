@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
-namespace GTour.Abstractions.JsInterop
+namespace GTour.Abstractions.JsInterop;
+
+public interface IJsInteropCommon
 {
-  public interface IJsInteropCommon
-  {
 
     ValueTask<string> ScrollToElement(string elementSelector);
 
@@ -15,5 +11,4 @@ namespace GTour.Abstractions.JsInterop
 
     ValueTask<string> RemoveClassFromElement(string elementSelector, string className);
 
-  }
 }

@@ -1,14 +1,10 @@
 ﻿using GTour.Abstractions.EventHandlers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace GTour.Abstractions
+namespace GTour.Abstractions;
+
+public interface IGTourService
 {
-  public interface IGTourService
-  {
 
     #region Events
     event TourRegisteredHandler OnTourRegistered;
@@ -22,16 +18,16 @@ namespace GTour.Abstractions
     #endregion
 
     #region Properties
-    bool ThrowOnTourNotFound { get; set; } 
+    bool ThrowOnTourNotFound { get; set; }
 
     IGTour CurrentTour { get; }
     #endregion
 
     #region Methods
     void RegisterTour(Abstractions.IGTour gTour);
-    
+
     Task StartTour(string tourId, string startStepName = default);
-    
+
     Task StartTour(Abstractions.IGTour gTour, string startStepName = default);
 
     Task StopTour();
@@ -45,9 +41,8 @@ namespace GTour.Abstractions
     Task GoToStep(string stepName);
 
     Task CompleteTour();
-    
+
     void DeRegisterTour(IGTour gTour);
     #endregion
 
-  }
 }

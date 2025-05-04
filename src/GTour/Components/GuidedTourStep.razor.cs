@@ -2,16 +2,13 @@
 using GTour.Abstractions.Common;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace GTour.Components
+namespace GTour.Components;
+
+public partial class GuidedTourStep : GTourStepComponent
 {
-  public partial class GuidedTourStep : GTourStepComponent
-  {
 
     #region Members
     private bool _disposed = false;
@@ -152,45 +149,45 @@ namespace GTour.Components
     #region Methods
     protected override void OnInitialized()
     {
-      if (ParentComponent != null)
-      {
-        ParentComponent.StepRegistered(this);
-
-        if (this.TourStepSequence.HasValue == false)
+        if (ParentComponent != null)
         {
-          Logger?.LogWarning($"It is recommended that the tour step sequence be set for step {this.StepName}");
+            ParentComponent.StepRegistered(this);
+
+            if (this.TourStepSequence.HasValue == false)
+            {
+                Logger?.LogWarning($"It is recommended that the tour step sequence be set for step {this.StepName}");
+            }
         }
-      }
     }
 
     private async Task OnCancelTourClick()
     {
-      await CancelTour();
+        await CancelTour();
     }
 
     private async Task OnNextStepClick()
     {
-      await NextStep();
+        await NextStep();
     }
 
     private async Task OnPreviousStepClick()
     {
-      await PreviousStep();
+        await PreviousStep();
     }
 
     private async Task OnCompleteTourClick()
     {
-      await CompleteTour();
+        await CompleteTour();
     }
 
     protected override async Task RunActivation()
     {
-      await ParentComponent.JsInteropStart(this);
+        await ParentComponent.JsInteropStart(this);
     }
 
     protected override async Task RunDeActivation()
     {
-      await ParentComponent.JsInteropEnd(this);
+        await ParentComponent.JsInteropEnd(this);
     }
     #endregion
 
@@ -198,13 +195,12 @@ namespace GTour.Components
 
     protected override void Dispose(bool disposing)
     {
-      if (disposing == true && _disposed == false)
-      {
-        _disposed = true;
-        ParentComponent.StepUnRegistered(this);
-      }
+        if (disposing == true && _disposed == false)
+        {
+            _disposed = true;
+            ParentComponent.StepUnRegistered(this);
+        }
     }
     #endregion
 
-  }
 }
